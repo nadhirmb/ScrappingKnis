@@ -4,11 +4,28 @@ from bs4 import BeautifulSoup
 import requests
 from csv import writer
 
-url= "https://www.jumia.dz/mlp-telephone-tablette/smartphones/"
-page = requests.get(url)
+url= "https://www.jumia.dz/telephone-tablette/"
 
-soup = BeautifulSoup(page.content, 'html.parser')
-lists = soup.find_all('article', class_="prd _fb col c-prd")
+def getdata(url):
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    return soup
+
+def getarticles(soup):
+    lists = soup.find_all('article', class_="prd _fb col c-prd")
+    return lists
+    
+
+def getnextpage(soup):
+    # this will return the next page URL
+    pages = soup.find('div', {'class': 'pg-w -ptm -pbxl'})
+    if not pages.find('a', {'aria-label': 'Dernière page'}):
+        url = 'https://www.amazon.co.uk' + str(pages.find('li', {'class': 'a-last'}).find('a')['href'])
+        return url
+    else:
+        return
+
+
 
 with open('housing.csv', 'w', encoding='utf8', newline='') as f:
     thewriter = writer(f)
